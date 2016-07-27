@@ -22,6 +22,7 @@ class Notifications:
 			settings = json.load(file)
 			alarm_settings = settings["alarms"]
 			self.notify_list = settings["pokemon"]
+			self.max_distance = settings["max_distance"]
 			self.seen = {}
 			self.alarms = []
 			for alarm in alarm_settings:
@@ -52,15 +53,16 @@ class Notifications:
 					origin_point = LatLng.from_degrees(config['ORIGINAL_LATITUDE'], config['ORIGINAL_LONGITUDE'])
 					pokemon_point = LatLng.from_degrees(pkinfo['lat'], pkinfo['lng'])
 					pkinfo['distance'] = int(origin_point.get_distance(pokemon_point).radians * 6366468.241830914)
-					diff = pokemon_point - origin_point
-					diff_lat = diff.lat().degrees
-					diff_lng = diff.lng().degrees
-					pkinfo['direction'] = (('N' if diff_lat >= 0 else 'S') if abs(diff_lat) > 1e-4 else '') + (
-						('E' if diff_lng >= 0 else 'W') if abs(diff_lng) > 1e-4 else '')
-					log.info(pkinfo['name']+" notification has been triggered!")
-					log.info("Encounter ID:" + str(id))
-					for alarm in self.alarms:
-						alarm.pokemon_alert(pkinfo)
+					if pkinfo['distance'] < self.max_distance:
+						diff = pokemon_point - origin_point
+						diff_lat = diff.lat().degrees
+						diff_lng = diff.lng().degrees
+						pkinfo['direction'] = (('N' if diff_lat >= 0 else 'S') if abs(diff_lat) > 1e-4 else '') + (
+							('E' if diff_lng >= 0 else 'W') if abs(diff_lng) > 1e-4 else '')
+						log.info(pkinfo['name']+" notification has been triggered!")
+						log.info("Encounter ID:" + str(id))
+						for alarm in self.alarms:
+							alarm.pokemon_alert(pkinfo)
 		self.clear_stale()
 
 	#clear stale so that the seen set doesn't get too large
