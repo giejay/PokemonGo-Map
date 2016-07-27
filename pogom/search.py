@@ -150,8 +150,8 @@ def search_thread(q):
             if response_dict:
                 with lock:
                     try:
-						pokemons, pokestops, gyms = parse_map(response_dict, i, step, step_location)
-						alarms.notify_pkmns(pokemons)
+                        pokemons, pokestops, gyms = parse_map(response_dict, i, step, step_location)
+                        alarms.notify_pkmns(pokemons)
                         log.debug("{}: itteration {} step {} complete".format(threadname, i, step))
                     except KeyError:
                         log.error('Search thread failed. Response dictionary key error')
