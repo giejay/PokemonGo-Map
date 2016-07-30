@@ -163,12 +163,9 @@ def search_thread(q):
                             failed_consecutive = 0
                         response_dict = {}
             else:
-                log.info('Map download failed, waiting and retrying')
-                log.debug('{}: itteration {} step {} failed'.format(threadname, i, step))
-                time.sleep(config['REQ_SLEEP'])
+                log.info('Map Download failed. Trying again.')
 
         time.sleep(config['REQ_SLEEP'])
-        q.task_done()
 
 #
 # Search Overseer
