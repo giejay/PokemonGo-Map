@@ -14,8 +14,8 @@ class Slack_Alarm(Alarm):
 		self.client.chat.post_message(self.channel, 'PokeAlarm activated! We will alert this channel about pokemon.')
 
 	def pokemon_alert(self, pokemon):
-		notification_text = "A wild " + pokemon['name'].title() + " (" + str(pokemon['distance']) + " mtrs, " \
-							+ pokemon['direction'] + ") has appeared!"
+		notification_text = "A wild " + pokemon['name'].title() + " (" + pokemon['distance'] + ", " \
+							+ pokemon['distance_duration'] + " walk) has appeared!"
 		google_maps_link = gmaps_link(pokemon["lat"], pokemon["lng"])
 		time_text = pkmn_time_text(pokemon['disappear_time'])
 		self.client.chat.post_message(self.channel, notification_text + " " + time_text + " " + google_maps_link)

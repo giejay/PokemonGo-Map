@@ -13,6 +13,9 @@ from pb_alarm import PB_Alarm
 from slack_alarm import Slack_Alarm
 from twilio_alarm import Twilio_Alarm
 from ..utils import get_pokemon_name
+from ..utils import parse_distance
+from ..utils import get_args
+import googlemaps
 
 class Notifications:
 
@@ -37,7 +40,8 @@ class Notifications:
 						log.info("Alarm type not found: " + alarm['type'])
 				else:
 					log.info("Alarm not activated: " + alarm['type'])
-
+		args = get_args()
+		self.gclient = googlemaps.Client(args.gdirections_key)
 
 	def notify_pkmns(self, pkmn):
 		for id in pkmn:
@@ -50,15 +54,10 @@ class Notifications:
 				}
 				self.seen[id] = pkinfo
 				if(self.notify_list[pkinfo['name']] == "True"):
-					origin_point = LatLng.from_degrees(config['ORIGINAL_LATITUDE'], config['ORIGINAL_LONGITUDE'])
-					pokemon_point = LatLng.from_degrees(pkinfo['lat'], pkinfo['lng'])
-					pkinfo['distance'] = int(origin_point.get_distance(pokemon_point).radians * 6366468.241830914)
-					if pkinfo['distance'] < self.max_distance:
-						diff = pokemon_point - origin_point
-						diff_lat = diff.lat().degrees
-						diff_lng = diff.lng().degrees
-						pkinfo['direction'] = (('N' if diff_lat >= 0 else 'S') if abs(diff_lat) > 1e-4 else '') + (
-							('E' if diff_lng >= 0 else 'W') if abs(diff_lng) > 1e-4 else '')
+					distance, duration = parse_distance(self.gclient, config['ORIGINAL_LATITUDE'], config['ORIGINAL_LONGITUDE'], pkinfo['lat'], pkinfo['lng'])
+					if distance['value'] < self.max_distance:
+						pkinfo['distance'] = distance['text']
+						pkinfo['distance_duration'] = duration['text']
 						log.info(pkinfo['name']+" notification has been triggered!")
 						log.info("Encounter ID:" + str(id))
 						for alarm in self.alarms:

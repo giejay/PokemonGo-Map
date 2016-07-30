@@ -38,6 +38,7 @@ if __name__ == '__main__':
     config['parse_pokemon'] = not args.no_pokemon
     config['parse_pokestops'] = not args.no_pokestops
     config['parse_gyms'] = not args.no_gyms
+    config['gdirections_key'] = args.gdirections_key
 
     # Turn these back up if debugging
     if args.debug:

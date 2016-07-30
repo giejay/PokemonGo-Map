@@ -21,6 +21,7 @@
 
 # Misc
 #gmaps-key:
+#gdirections-key:
 
 # Webserver settings
 #host:                  # address to listen on (default 127.0.0.1)

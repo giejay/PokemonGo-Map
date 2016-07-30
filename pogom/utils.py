@@ -49,6 +49,7 @@ def get_args():
     parser.add_argument('-os', '--only-server', help='Server-Only Mode. Starts only the Webserver without the searcher.', action='store_true', default=False)
     parser.add_argument('-fl', '--fixed-location', help='Hides the search bar for use in shared maps.', action='store_true', default=False)
     parser.add_argument('-k', '--gmaps-key', help='Google Maps Javascript API Key', required=True)
+    parser.add_argument('-gdirections-key', '--gdirections-key', help='Google Maps Javascript API Key', required=True)
     parser.add_argument('-C', '--cors', help='Enable CORS on web server', action='store_true', default=False)
     parser.add_argument('-D', '--db', help='Database filename', default='pogom.db')
     parser.add_argument('-t', '--num-threads', help='Number of search threads', type=int, default=1)
@@ -162,3 +163,7 @@ def send_to_webhook(message_type, message):
                 log.debug('Could not receive response from webhook')
             except requests.exceptions.RequestException as e:
                 log.debug(e)
+
+def parse_distance(client, from_lat, from_lng, to_lat, to_lng):
+    matrix = client.distance_matrix(origins = [[from_lat, from_lng]], destinations = [[to_lat, to_lng]], mode = 'walking')
+    return matrix['rows'][0]['elements'][0]['distance'], matrix['rows'][0]['elements'][0]['duration']
