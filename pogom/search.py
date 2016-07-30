@@ -175,6 +175,7 @@ def search_thread(q):
                 log.info('Map Download failed. Trying again.')
 
         time.sleep(config['REQ_SLEEP'])
+        q.task_done()
 
 
 #
