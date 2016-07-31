@@ -331,6 +331,16 @@ function createSearchMarker() {
   return marker;
 }
 
+var searchControlURI = 'search_control';
+function searchControl(action) {
+  $.post(searchControlURI + '?action='+encodeURIComponent(action));
+}
+function updateSearchStatus() {
+  $.getJSON(searchControlURI).then(function(data){
+    $('#search-switch').prop('checked', data.status);
+  })
+}
+
 function initSidebar() {
   $('#gyms-switch').prop('checked', Store.get('showGyms'));
   $('#pokemon-switch').prop('checked', Store.get('showPokemon'));
@@ -342,6 +352,9 @@ function initSidebar() {
   $('#sound-switch').prop('checked', Store.get('playSound'));
   var searchBox = new google.maps.places.SearchBox(document.getElementById('next-location'));
   $("#next-location").css("background-color", $('#geoloc-switch').prop('checked') ? "#e0e0e0" : "#ffffff");
+
+  updateSearchStatus();
+  setInterval(updateSearchStatus,5000);
 
   searchBox.addListener('places_changed', function() {
     var places = searchBox.getPlaces();
@@ -1113,7 +1126,7 @@ function centerMap(lat, lng, zoom) {
 function i8ln(word) {
   if ($.isEmptyObject(i8ln_dictionary) && language != "en" && language_lookups < language_lookup_threshold) {
     $.ajax({
-      url: "static/locales/" + language + ".json",
+      url: "static/dist/locales/" + language + ".min.json",
       dataType: 'json',
       async: false,
       success: function(data) {
@@ -1153,7 +1166,7 @@ $(function() {
   $selectStyle = $("#map-style")
 
   // Load Stylenames, translate entries, and populate lists
-  $.getJSON("static/data/mapstyle.json").done(function(data){
+  $.getJSON("static/dist/data/mapstyle.min.json").done(function(data){
     var styleList = []
 
     $.each(data, function(key, value){
@@ -1198,7 +1211,7 @@ $(function() {
   var numberOfPokemon = 151;
 
   // Load pokemon names and populate lists
-  $.getJSON("static/data/pokemon.json").done(function(data) {
+  $.getJSON("static/dist/data/pokemon.min.json").done(function(data) {
     var pokeList = [];
 
     $.each(data, function(key, value) {
@@ -1336,4 +1349,9 @@ $(function() {
     else
       Store.set('geoLocate', this.checked);
   });
+
+  $('#search-switch').change(function() {
+    searchControl(this.checked?'on':'off');
+  });
+
 });
