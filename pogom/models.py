@@ -12,7 +12,7 @@ from playhouse.pool import PooledMySQLDatabase
 from playhouse.shortcuts import RetryOperationalError
 from datetime import datetime, timedelta
 from base64 import b64encode
-
+from pogom.alarm.notifications import Notifications
 from . import config
 from .utils import get_pokemon_name, get_pokemon_rarity, get_pokemon_types, get_args, send_to_webhook
 from .transform import transform_from_wgs_to_gcj
@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 
 args = get_args()
 flaskDb = FlaskDB()
+notifications = Notifications()
 
 
 class MyRetryDB(RetryOperationalError, PooledMySQLDatabase):
@@ -274,6 +275,8 @@ def parse_map(map_dict, step_location):
                     'last_modified_time': p['last_modified_timestamp_ms'],
                     'time_until_hidden_ms': p['time_till_hidden_ms']
                 }
+
+                notifications.notify_pkmns(webhook_data)
 
                 send_to_webhook('pokemon', webhook_data)
 

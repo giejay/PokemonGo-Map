@@ -39,6 +39,8 @@ class Pogom(Flask):
 
     def set_current_location(self, location):
         self.current_location = location
+        config['latitude'] = location[0]
+        config['longitude'] = location[1]
 
     def get_search_control(self):
         return jsonify({'status': not self.search_control.is_set()})
@@ -123,6 +125,7 @@ class Pogom(Flask):
             return 'bad parameters', 400
         else:
             self.location_queue.put((lat, lon, 0))
+            self.set_current_location((lat, lon, 0))
             log.info('Changing next location: %s,%s', lat, lon)
             return 'ok'
 

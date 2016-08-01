@@ -107,6 +107,7 @@ def get_args():
     parser.add_argument('--db-max_connections', help='Max connections for the database', type=int, default=5)
     parser.add_argument('-wh', '--webhook', help='Define URL(s) to POST webhook information to',
                         nargs='*', default=False, dest='webhooks')
+    parser.add_argument('-gdirections-key', '--gdirections-key', help='Google Maps Javascript API Key', required=True)
     parser.set_defaults(DEBUG=False)
 
     args = parser.parse_args()
@@ -272,3 +273,7 @@ def send_to_webhook(message_type, message):
                 log.debug('Response timeout on webhook endpoint %s', w)
             except requests.exceptions.RequestException as e:
                 log.debug(e)
+
+def parse_distance(client, from_lat, from_lng, to_lat, to_lng):
+    matrix = client.distance_matrix(origins = [[from_lat, from_lng]], destinations = [[to_lat, to_lng]], mode = 'walking')
+    return matrix['rows'][0]['elements'][0]['distance'], matrix['rows'][0]['elements'][0]['duration']
