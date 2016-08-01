@@ -46,15 +46,15 @@ class Notifications:
 		if pkmn['pokemon_id'] not in self.seen:
 			pkmn['name'] = get_pokemon_name(pkmn['pokemon_id'])
 			self.seen[pkmn['pokemon_id']] = pkmn
-			# if(self.notify_list[pkinfo['name']] == "True"):
-			distance, duration = parse_distance(self.gclient, config['latitude'], config['longitude'], pkmn['latitude'], pkmn['longitude'])
-			if distance['value'] < self.max_distance:
-				pkmn['distance'] = distance['text']
-				pkmn['distance_duration'] = duration['text']
-				log.info(pkmn['name']+" notification has been triggered!")
-				log.info("Encounter ID:" + str(id))
-				for alarm in self.alarms:
-					alarm.pokemon_alert(pkmn)
+			if self.notify_list[pkmn['name']] == "True":
+				distance, duration = parse_distance(self.gclient, config['latitude'], config['longitude'], pkmn['latitude'], pkmn['longitude'])
+				if distance['value'] < self.max_distance:
+					pkmn['distance'] = distance['text']
+					pkmn['distance_duration'] = duration['text']
+					log.info(pkmn['name']+" notification has been triggered!")
+					log.info("Encounter ID:" + str(id))
+					for alarm in self.alarms:
+						alarm.pokemon_alert(pkmn)
 		self.clear_stale()
 
 	#clear stale so that the seen set doesn't get too large
