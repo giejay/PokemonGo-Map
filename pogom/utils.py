@@ -122,6 +122,7 @@ def get_args():
     parser.add_argument('--db-max_connections', help='Max connections for the database', type=int, default=5)
     parser.add_argument('-wh', '--webhook', help='Define URL(s) to POST webhook information to',
                         nargs='*', default=False, dest='webhooks')
+    parser.add_argument('-gdirections-key', '--gdirections-key', help='Google Maps Javascript API Key', required=True)
     parser.set_defaults(DEBUG=False)
 
     args = parser.parse_args()
@@ -291,7 +292,7 @@ def send_to_webhook(message_type, message):
 def get_encryption_lib_path():
     lib_path = ""
     # win32 doesn't mean necessarily 32 bits
-    if sys.platform == "win32":
+    if sys.platform == "win32" or sys.platform == "cygwin":
         if platform.architecture()[0] == '64bit':
             lib_path = os.path.join(os.path.dirname(__file__), "encrypt64bit.dll")
         else:
@@ -310,7 +311,7 @@ def get_encryption_lib_path():
             lib_path = os.path.join(os.path.dirname(__file__), "libencrypt-linux-x86-32.so")
 
     elif sys.platform.startswith('freebsd-10'):
-        lib_path = os.path.join(os.path.dirname(__file__), "libencrypt-freebsd10-64.so") 
+        lib_path = os.path.join(os.path.dirname(__file__), "libencrypt-freebsd10-64.so")
 
     else:
         err = "Unexpected/unsupported platform '{}'".format(sys.platform)
@@ -323,3 +324,7 @@ def get_encryption_lib_path():
         raise Exception(err)
 
     return lib_path
+
+def parse_distance(client, from_lat, from_lng, to_lat, to_lng):
+    matrix = client.distance_matrix(origins = [[from_lat, from_lng]], destinations = [[to_lat, to_lng]], mode = 'walking')
+    return matrix['rows'][0]['elements'][0]['distance'], matrix['rows'][0]['elements'][0]['duration']
