@@ -20,7 +20,7 @@ def gmaps_link(lat, lng):
 		return 'http://maps.google.com/maps?q={}'.format(latLon)
 		
 def pkmn_time_text(time_to_disappear):
-	s = time_to_disappear + 7200 - (datetime.utcnow() - epoch).total_seconds()
+	s = time_to_disappear - (datetime.utcnow() - epoch).total_seconds()
 	(m, s) = divmod(s, 60)
 	(h, m) = divmod(m, 60)
 	d = timedelta(hours = h, minutes = m, seconds = s)

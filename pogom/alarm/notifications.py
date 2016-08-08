@@ -61,7 +61,7 @@ class Notifications:
 	def clear_stale(self):
 		old = []
 		for id in self.seen:
-			if self.seen[id]['disappear_time'] + 7200 < time.time() :
+			if self.seen[id]['disappear_time'] < time.time() :
 				old.append(id)
 		for id in old:
 			del self.seen[id]
