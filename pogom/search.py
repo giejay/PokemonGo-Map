@@ -163,7 +163,7 @@ def search_overseer_thread(args, new_location_queue, pause_bit, encryption_lib_p
         # cleared above) -- either way, time to fill it back up
         if search_items_queue.empty():
             log.debug('Search queue empty, restarting loop')
-            for step, step_location in enumerate(generate_location_steps(current_location, args.step_limit), 1):
+            for step, step_location in enumerate(generate_location_steps(current_location, config['STEP_LIMIT']), 1):
                 log.debug('Queueing step %d @ %f/%f/%f', step, step_location[0], step_location[1], step_location[2])
                 search_args = (step, step_location)
                 search_items_queue.put(search_args)
