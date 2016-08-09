@@ -31,6 +31,8 @@ from pgoapi.exceptions import AuthException
 
 from .models import parse_map
 
+from . import config
+
 log = logging.getLogger(__name__)
 
 TIMESTAMP = '\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000'
