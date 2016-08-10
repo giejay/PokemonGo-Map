@@ -43,9 +43,9 @@ class Notifications:
 		self.gclient = googlemaps.Client(args.gdirections_key)
 
 	def notify_pkmns(self, pkmn):
-		if pkmn['pokemon_id'] not in self.seen:
+		if pkmn['encounter_id'] not in self.seen:
 			pkmn['name'] = get_pokemon_name(pkmn['pokemon_id'])
-			self.seen[pkmn['pokemon_id']] = pkmn
+			self.seen[pkmn['encounter_id']] = pkmn
 			if self.notify_list[pkmn['name']] == "True":
 				distance, duration = parse_distance(self.gclient, config['latitude'], config['longitude'], pkmn['latitude'], pkmn['longitude'])
 				if distance['value'] < self.max_distance:
