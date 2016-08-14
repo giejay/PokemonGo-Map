@@ -15,6 +15,7 @@ from ..utils import get_pokemon_name
 from ..utils import parse_distance
 from ..utils import get_args
 import googlemaps
+import math
 
 class Notifications:
 
@@ -43,10 +44,11 @@ class Notifications:
 		self.gclient = googlemaps.Client(args.gdirections_key)
 
 	def notify_pkmns(self, pkmn):
-		if pkmn['pokemon_id'] not in self.seen:
+		if pkmn['encounter_id'] not in self.seen:
 			pkmn['name'] = get_pokemon_name(pkmn['pokemon_id'])
-			self.seen[pkmn['pokemon_id']] = pkmn
-			if self.notify_list[pkmn['name']] == "True":
+			self.seen[pkmn['encounter_id']] = pkmn
+			distance_1 = self.distance((config['latitude'], config['longitude']), (pkmn['latitude'], pkmn['longitude'])) * 1000
+			if self.notify_list[pkmn['name']] == "True" or distance_1 < 105:
 				distance, duration = parse_distance(self.gclient, config['latitude'], config['longitude'], pkmn['latitude'], pkmn['longitude'])
 				if distance['value'] < self.max_distance:
 					pkmn['distance'] = distance['text']
@@ -56,6 +58,20 @@ class Notifications:
 					for alarm in self.alarms:
 						alarm.pokemon_alert(pkmn)
 		self.clear_stale()
+
+	def distance(self, origin, destination):
+		lat1, lon1 = origin
+		lat2, lon2 = destination
+		radius = 6371 # km
+
+		dlat = math.radians(lat2-lat1)
+		dlon = math.radians(lon2-lon1)
+		a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) \
+												  * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
+		c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+		d = radius * c
+
+		return d
 
 	#clear stale so that the seen set doesn't get too large
 	def clear_stale(self):
